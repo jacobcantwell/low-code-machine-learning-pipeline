@@ -3,10 +3,6 @@
 A Low Code AWS Machine Learning Pipeline
 
 
-## Amazon Accounts
-
-
-
 ## AWS Resources
 
 Follow these steps to create the required AWS resources.
@@ -22,8 +18,13 @@ Create an Amazon S3 bucket in your local AWS region (e.g. ap-southeast-2) to sto
   * Select `Create bucket`
   * Bucket name: `call-detail-records-mock`
   * AWS Region: `Asia Pacific (Sydney) ap-southeast-2`
-  * Select `Create bucket` 
-* Copy the CDR csv files from the [data](./data/) folder to your Amazon S3 bucket
+  * Select `Create bucket`
+* Create a folder for the data that you will be uploading
+  * Select `Create folder`
+  * Folder name `raw`
+  * Select `Create folder`
+* Select the `raw` folder
+* Copy the CDR csv files from the [data](./data/) folder to your Amazon S3 bucket *raw* folder
   * Select your new bucket name `call-detail-records-mock`
   * Select `Upload`
   * Drag and drop files and folders you want to upload, or choose `Add files`
@@ -34,7 +35,7 @@ Create an Amazon S3 bucket in your local AWS region (e.g. ap-southeast-2) to sto
 
 [AWS Glue](https://aws.amazon.com/glue/) is a serverless data integration service that makes it easy to discover, prepare, and combine data for analytics, machine learning, and application development. AWS Glue provides all the capabilities needed for data integration, so you can start analyzing your data and putting it to use in minutes instead of months. AWS Glue provides both visual and code-based interfaces to make data integration easier. Users can easily find and access data using the AWS Glue Data Catalog. Data engineers and ETL (extract, transform, and load) developers can visually create, run, and monitor ETL workflows with a few clicks in AWS Glue Studio. Data analysts and data scientists can use AWS Glue DataBrew to visually enrich, clean, and normalize data without writing code.
 
-#### AWS Glue Crawler
+### AWS Glue Crawler
 
 An AWS Glue Crawler connects to a data store, progresses through a prioritized list of classifiers to determine the schema for your data, and then creates metadata tables in your data catalog.
 
@@ -50,7 +51,7 @@ You will create a crawler for each data schema type that you have organized into
   * Select `Add a data source`
 * In the popup, Add data source
   * Data source `S3`
-  * Enter the S3 path to your bucket `s3://call-detail-records-mock/`
+  * Enter the S3 path to your bucket `s3://call-detail-records-mock/raw/`
     * Path should end with a `/` character
   * Select `Add an S3 data source`
   * Select `Next`
@@ -76,13 +77,73 @@ You will create a crawler for each data schema type that you have organized into
   * Select crawler name `call-detail-records-mock-crawler`
   * Select `Run crawler`
   * Crawler will start running and you can see its status at the bottom section Crawler runs
+
+### AWS Glue Table
+
 * View new AWS Glue table
   * Select `Databases`
   * Select database name `call-detail-records-mock-database`
-  * Select table name `call_detail_records_mock`
+  * Select table name `raw`
   * View and manage the table schema
 
 You can see that the columns *start_datetime*, *connect_datetime*, and *disconnect_datetime* have the data type *string*. These fields need to be converted to the data type *timestamp* so that we can run time related searches.
+
+### AWS Glue Studio
+
+AWS Glue Studio makes it easier to visually create, run, and monitor AWS Glue ETL jobs. You can build ETL jobs that move and transform data using a drag-and-drop editor, and AWS Glue automatically generates the code.
+
+* Search for `Glue` in the Amazon Management Console
+* Select `AWS Glue Studio`
+* Select `Jobs`
+* Create job
+  * Select `Visual with a source and target`
+  * Source `Amazon S3`
+  * Target `Amazon S3`
+  * Select `Create`
+* Rename Untitled job `call-detail-records-mock-transform-job`
+* Select `Data source - S3 bucket`
+  * S3 source type, select `Data Catalog table`
+  * Database, select `call-detail-records-mock-database`
+  * Table, select `raw`
+* Select `Transform - ApplyMapping`
+  * Select `Transform`
+
+Apply the following mappings
+
+| Source key | Transform |
+| ----------- | ----------- |
+| start_datetime | *Data type* to `timestamp` |
+| connect_datetime | *Data type* to `timestamp` |
+| disconnect_datetime | *Data type* to `timestamp` |
+| originating_transit_carrier_id | select `Drop` |
+| terminating_transit_carrier_id | select `Drop` |
+
+* Select `Data target - S3 bucket`
+  * Format `CSV`
+  * Compression Type `Uncompressed`
+  * S3 Target Location `s3://call-detail-records-mock/processed/`
+  * Data Catalog update options `Create a table in the Data Catalog and on subsequent runs, update the schema and add new partitions`
+  * Database, select `call-detail-records-mock-database`
+  * Table name `processed`
+* Select top tab `Job details`
+  * IAM Role, select `AWSGlueServiceRole-call-detail-records-mock`
+  * Advanced properties
+  * Script filename `call-detail-records-mock-process.py`
+* Select `Save`
+* Select `Run`. Navigate to Run Details for more details.
+
+* View new AWS Glue table
+  * Select `Databases`
+  * Select database name `call-detail-records-mock-database`
+  * Select table name `processed`
+  * View and manage the table schema
+
+You can see that the columns *start_datetime*, *connect_datetime*, and *disconnect_datetime* have the data type *timestamp* and the *originating_transit_carrier_id* and *terminating_transit_carrier_id* columns have been removed.
+
+
+### Amazon Athena
+
+Amazon Athena is an interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. Athena is serverless, so there is no infrastructure to setup or manage, and you can start analyzing data immediately. You don’t even need to load your data into Athena, it works directly with data stored in S3.
 
 
 
