@@ -30,6 +30,16 @@ start_datetime,translated_calling_number,translated_called_number,connect_dateti
 
 Dates are provided in the format `%d-%m-%Y %H:%M`
 
+We want to transform this data with the following mappings
+
+| Source key | Transform |
+| ----------- | ----------- |
+| start_datetime | *Data type* to `timestamp` |
+| connect_datetime | *Data type* to `timestamp` |
+| disconnect_datetime | *Data type* to `timestamp` |
+| originating_transit_carrier_id | select `Drop` |
+| terminating_transit_carrier_id | select `Drop` |
+
 ## AWS Resources
 
 Follow these steps to create the required AWS resources.
@@ -123,29 +133,52 @@ AWS Glue Studio makes it easier to visually create, run, and monitor AWS Glue ET
 * Select `AWS Glue Studio`
 * Select `Jobs`
 * Create job
-  * Select `Visual with a source and target`
-  * Source `Amazon S3`
-  * Target `Amazon S3`
+  * Select `Visual with a blank canvas`
   * Select `Create`
 * Rename Untitled job `call-detail-records-mock-transform-job`
-* Select `Data source - S3 bucket`
+* Create a data *Source*
+  * Select `Source`
+  * Select `Amazon S3`
   * S3 source type, select `Data Catalog table`
   * Database, select `call-detail-records-mock-database`
   * Table, select `raw`
-* Select `Transform - ApplyMapping`
-  * Select `Transform`
 
-Apply the following mappings
+* Create a data *Action*
+  * Select the `Data source - S33 bucket` node
+  * Select `Action`
+  * Select `Change Schema (Apply Mapping)`
+  * Select `Transform` tab
+  * You can preview the schema of the data
 
-| Source key | Transform |
-| ----------- | ----------- |
-| start_datetime | *Data type* to `timestamp` |
-| connect_datetime | *Data type* to `timestamp` |
-| disconnect_datetime | *Data type* to `timestamp` |
-| originating_transit_carrier_id | select `Drop` |
-| terminating_transit_carrier_id | select `Drop` |
+* Create a data *Action*
+  * Select the `Transform - ApplyMapping` node
+  * Select `Action`
+  * Select `SQL Query`
+  * Select `Transform` tab
+  * Insert the SQL query below
 
-* Select `Data target - S3 bucket`
+```sql
+select
+  to_timestamp(start_datetime,'dd-MM-yyyy HH:mm') AS start_datetime,
+  translated_calling_number,
+  translated_called_number, 
+  to_timestamp(connect_datetime,'dd-MM-yyyy HH:mm') AS connect_datetime,
+  to_timestamp(disconnect_datetime,'dd-MM-yyyy HH:mm') AS disconnect_datetime,
+  charged_duration,
+  originating_carrier_id,
+  terminating_carrier_id,
+  call_direction
+from myDataSource
+```
+
+* Select `Output schema`
+  * Edit *start_datetime* data type to `timestamp`
+* Select `Data preview` to check
+
+* Create a data *Target*
+  * Select the `Transform - SQL Query` node
+  * Select `Target`
+  * Select `Amazon S3`
   * Format `CSV`
   * Compression Type `Uncompressed`
   * S3 Target Location `s3://call-detail-records-mock/processed/`
@@ -154,6 +187,7 @@ Apply the following mappings
   * Table name `processed`
 * Select top tab `Job details`
   * IAM Role, select `AWSGlueServiceRole-call-detail-records-mock`
+  * Job timeout (minutes) `10`
   * Advanced properties
   * Script filename `call-detail-records-mock-process.py`
 * Select `Save`
