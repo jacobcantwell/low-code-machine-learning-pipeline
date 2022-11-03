@@ -3,6 +3,33 @@
 A Low Code AWS Machine Learning Pipeline
 
 
+## Data Format
+
+Below is the list of columns in our data set.
+
+| Source key | Data example |
+| ----------- | ----------- |
+| start_datetime | 25-02-2021 11:53 | 
+| translated_calling_number | 4712226680853 | 
+| translated_called_number | 4712226680853 | 
+| connect_datetime | 25-02-2021 11:53 | 
+| disconnect_datetime | 25-02-2021 12:48 | 
+| charged_duration | 55 | 
+| originating_carrier_id | 6 | 
+| originating_transit_carrier_id | 6 | 
+| terminating_carrier_id | 4 | 
+| terminating_transit_carrier_id | 4 | 
+| call_direction | 1 |
+
+```csv
+start_datetime,translated_calling_number,translated_called_number,connect_datetime,disconnect_datetime,charged_duration,originating_carrier_id,originating_transit_carrier_id,terminating_carrier_id,terminating_transit_carrier_id,call_direction
+25-02-2021 11:53,5893746421295,5893746421295,25-02-2021 11:53,25-02-2021 12:48,55,7,7,8,8,1
+04-03-2022 10:05,4767306697766,4767306697766,04-03-2022 10:05,04-03-2022 10:18,13,3,3,0,0,2
+14-05-2022 11:05,6632467120375,6632467120375,14-05-2022 11:05,14-05-2022 11:28,23,3,3,9,9,2
+```
+
+Dates are provided in the format `%d-%m-%Y %H:%M`
+
 ## AWS Resources
 
 Follow these steps to create the required AWS resources.

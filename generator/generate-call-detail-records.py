@@ -7,10 +7,11 @@ faker = Faker()
 
 YEAR_RANGE = 5
 MONTHS_IN_YEAR = 12
-ROW_SIZE = 10000
+ROW_SIZE = 2000
 CSV_HEADERS = ["start_datetime","translated_calling_number","translated_called_number","connect_datetime","disconnect_datetime","charged_duration","originating_carrier_id","originating_transit_carrier_id","terminating_carrier_id","terminating_transit_carrier_id","call_direction"]
 OUTPUT_FOLDER = '../data/'
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+# DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = "%d-%m-%Y %H:%M" # 25-02-2021 11:53
 
 for year_offset in range(YEAR_RANGE):
     # minus 1 year
