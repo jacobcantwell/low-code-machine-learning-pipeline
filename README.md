@@ -76,6 +76,14 @@ You will create a crawler for each data schema type that you have organized into
   * Select crawler name `call-detail-records-mock-crawler`
   * Select `Run crawler`
   * Crawler will start running and you can see its status at the bottom section Crawler runs
+* View new AWS Glue table
+  * Select `Databases`
+  * Select database name `call-detail-records-mock-database`
+  * Select table name `call_detail_records_mock`
+  * View and manage the table schema
+
+You can see that the columns *start_datetime*, *connect_datetime*, and *disconnect_datetime* have the data type *string*. These fields need to be converted to the data type *timestamp* so that we can run time related searches.
+
 
 
 
