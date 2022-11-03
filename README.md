@@ -201,11 +201,35 @@ from myDataSource
 
 You can see that the columns *start_datetime*, *connect_datetime*, and *disconnect_datetime* have the data type *timestamp* and the *originating_transit_carrier_id* and *terminating_transit_carrier_id* columns have been removed.
 
-
 ### Amazon Athena
 
 Amazon Athena is an interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. Athena is serverless, so there is no infrastructure to setup or manage, and you can start analyzing data immediately. You don’t even need to load your data into Athena, it works directly with data stored in S3.
 
+#### Setup Amazon Athena
+
+The first time you have used Amazon Athena in your AWS account, you will need to setup the Query result location.
+* Select `Settings`
+* Select `Manage`
+* Enter a location of query results
+
+#### Query Data with Amazon Athena
+
+* Search for `Athena` in the Amazon Management Console
+* Under *Tables and views*, expand your new table `processed`. You should see all of the data columns with new timestamp formats.
+* Select the vertical `...` menu
+* Select `Preview Table`
+
+This will create an SQL query that and you can preview data sitting in Amazon S3 and cataloged and transformed with AWS Glue.
+
+```
+SELECT * FROM "call-detail-records-mock-database"."processed" limit 10;
+```
+
+### Amazon Quicksight
+
+Amazon QuickSight is a very fast, easy-to-use, cloud-powered business analytics service that makes it easy for all employees within an organization to build visualizations, perform ad-hoc analysis, and quickly get business insights from their data, anytime, on any device. Upload CSV and Excel files; connect to SaaS applications like Salesforce; access on-premises databases like SQL Server, MySQL, and PostgreSQL; and seamlessly discover your AWS data sources such as Amazon Redshift, Amazon RDS, Amazon Aurora, Amazon Athena, and Amazon S3. QuickSight enables organizations to scale their business analytics capabilities to hundreds of thousands of users, and delivers fast and responsive query performance by using a robust in-memory engine (SPICE).
+
+* Search for `Quicksight` in the Amazon Management Console
 
 
 
