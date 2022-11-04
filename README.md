@@ -180,7 +180,7 @@ from myDataSource
   * Select `Target`
   * Select `Amazon S3`
   * Format `CSV`
-  * Compression Type `Uncompressed`
+  * Compression Type `None`
   * S3 Target Location `s3://call-detail-records-mock/processed/`
   * Data Catalog update options `Create a table in the Data Catalog and on subsequent runs, update the schema and add new partitions`
   * Database, select `call-detail-records-mock-database`
