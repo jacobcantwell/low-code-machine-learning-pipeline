@@ -2,8 +2,7 @@
 
 A Low Code AWS Machine Learning Pipeline
 
-
-## Data Format
+## Data Format of the Call Data Records
 
 Below is the list of columns in our data set.
 
@@ -44,11 +43,11 @@ We want to transform this data with the following mappings
 
 Follow these steps to create the required AWS resources.
 
-## Amazon S3 bucket
-
-### Create an Amazon S3 bucket
+## Amazon S3
 
 [Amazon S3](https://aws.amazon.com/s3/) is object storage built to store and retrieve any amount of data from anywhere. It’s a simple storage service that offers industry leading durability, availability, performance, security, and virtually unlimited scalability at very low costs.
+
+### Create an Amazon S3 bucket
 
 Create an Amazon S3 bucket in your local AWS region (e.g. ap-southeast-2) to store the CDR files. Group files into Amazon S3 bucket files by their schema type, so files of one type should go in their own folder.
 
@@ -298,5 +297,19 @@ You will create a new SPICE dataset based on an Amazon S3.
 * Select `Visualize`
 
 Your data will be imported to SPICE and you can start creating visualizations.
+
+### Create a Visualization
+
+#### Creating a new visual
+
+* Select `Add visual`
+* Select the new AutoGraph chart
+* Select the visual type
+* Drag the fields to your chart
+* Resize the chart as necessary
+
+#### Example Visuals
+
+
 
 
