@@ -240,8 +240,7 @@ You should add all the job sources, transforms, and targets, and make all the ch
 
 Amazon Athena is an interactive query service that makes it easy to analyze data directly in Amazon Simple Storage Service (Amazon S3) using standard SQL. With a few actions in the AWS Management Console, you can point Athena at your data stored in Amazon S3 and begin using standard SQL to run ad-hoc queries and get results in seconds. Athena is serverless, so there is no infrastructure to setup or manage, and you can start analyzing data immediately.
 
-Amazon Athena can be used as a data source for business intelligence tools and other applications, such as SQL workbench. To explore and visualize your data with business intelligence tools, download, install, and configure an ODBC (Open Database Connectivity) or JDBC (Java Database Connectivity) driver. On Windows operating systems, you can use the Microsoft Power BI connector for Amazon Athena to analyze data from Amazon Athena in Microsoft Power BI Desktop.
-
+Amazon Athena can be used as a data source for business intelligence tools and other applications, such as SQL workbench. To explore and visualize your data with business intelligence tools, download, install, and configure an ODBC (Open Database Connectivity) or JDBC (Java Database Connectivity) driver. On Windows operating systems, you can use the Microsoft Power BI connector for Amazon Athena to analyze data from Amazon Athena in Microsoft Power BI Desktop. Athena integrates with Amazon QuickSight for easy data visualization in the AWS management console.
 
 #### Setup Amazon Athena
 
@@ -267,8 +266,35 @@ SELECT * FROM "call-detail-records-mock-database"."processed" limit 10;
 
 Amazon QuickSight is a very fast, easy-to-use, cloud-powered business analytics service that makes it easy for all employees within an organization to build visualizations, perform ad-hoc analysis, and quickly get business insights from their data, anytime, on any device. Upload CSV and Excel files; connect to SaaS applications like Salesforce; access on-premises databases like SQL Server, MySQL, and PostgreSQL; and seamlessly discover your AWS data sources such as Amazon Redshift, Amazon RDS, Amazon Aurora, Amazon Athena, and Amazon S3. QuickSight enables organizations to scale their business analytics capabilities to hundreds of thousands of users, and delivers fast and responsive query performance by using a robust in-memory engine (SPICE).
 
-* Search for `Quicksight` in the Amazon Management Console
+#### Manage Amazon QuickSight
 
+* Search for `QuickSight` in the Amazon Management Console
+* Click on person icon on the top right hand of the QuickSight console
+* Select `Security & permissions`
+* Under *QuickSight access to AWS services*, select `Manage`
+* Check the *Amazon S3* checkbox
+* Select `Select S3 buckets`
+* Check the box for the Amazon S3 bucket with the processed data `call-detail-records-mock`
+* Select `Finish`
 
+#### Create Amazon QuickSight Dataset
+
+When you import data into a dataset rather than using a direct SQL query, it becomes SPICE data because of how it's stored. SPICE (Super-fast, Parallel, In-memory Calculation Engine) is the robust in-memory engine that Amazon QuickSight uses. It's engineered to rapidly perform advanced calculations and serve data. In Enterprise edition, data stored in SPICE is encrypted at rest.
+
+You will create a new SPICE dataset based on an Amazon S3.
+
+* Select `Datasets`
+* Select `New Dataset`
+* Select `Athena`
+* Enter a name for the data source `processed-timestamp-v1`
+* Select `Create data source`
+* Select the AWS Glue Catalog `AwsDataCatalog`
+* Select the AWS Glue Database `call-detail-records-mock-database`
+* Select the process data table created by your AWS Glue ETL job `processed-timestamp-v1`
+* Select `Select`
+* Select `Import to SPICE for quicker analytics`
+* Select `Visualize`
+
+Your data will be imported to SPICE and you can start creating visualizations.
 
 
