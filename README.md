@@ -298,6 +298,31 @@ You will create a new SPICE dataset based on an Amazon S3.
 
 Your data will be imported to SPICE and you can start creating visualizations.
 
+#### Create calculated fields
+
+You can add calculated fields to a dataset during data preparation or from the analysis page. When you add a calculated field to a dataset during data preparation, it's available to all analyses that use that dataset.
+
+Add the calculated fields below.
+
+* Open your analysis
+* Select `+ Add` dropdown and `Add calculated field`
+* Enter a name using the table below
+* Enter a formula using the table below
+* Select `Save`
+
+| Field name | Formula |
+| -- | -- |
+| total charge | {day charge} + {evening charge} + {night charge} |
+| total minutes | {day minutes} + {evening minutess} + {night minutes} |
+
+Review the data set to see of the fields including the new calculated fields.
+
+* Select `Datasets`
+* Select dataset `processed-timestamp-v1`
+* Select `EDIT DATASET`
+
+
+
 ### Create a Visualization
 
 #### Creating a new visual
@@ -310,6 +335,10 @@ Your data will be imported to SPICE and you can start creating visualizations.
 
 #### Example Visuals
 
-
-
+| Chart Title | Chart type | Value | Target value measure | Trend group dimension | Filter | Sort |
+| -- | -- | -- | -- | -- | -- | -- |
+| Sum of Total Minutes | Autograph | total minutes (Sum) | - | - | - | - |
+| Sum of Total Charge | Autograph | total charge (Sum) | - | - | - | - |
+| Sum of Minutes by Type | Vertical bar chart | day minutes (Sum)<br />evening minutes (Sum)<br />night minutes (Sum)<br /> | - | - | - | - |
+| Sum of Minutes Type by Phone Number | Vertical bar chart | phone number | - | day minutes (Sum)<br />evening minutes (Sum)<br />night minutes (Sum)<br /> | phone number, top and bottom filter, top 10 by total minutes Sum | total minutes descending |
 
