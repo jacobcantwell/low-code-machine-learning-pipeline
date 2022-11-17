@@ -163,7 +163,7 @@ The name of the role that you create for the job must start with the string *AWS
   * Table, select `raw`
 
 * Create a data *Action*
-  * Select the `Transform - ApplyMapping` node
+  * Select the `Transform - SQL Query` node
   * Select `Action`
   * Select `SQL Query`
   * Select `Transform` tab
@@ -317,9 +317,11 @@ Add the calculated fields below.
 
 Review the data set to see of the fields including the new calculated fields.
 
+* Select `QuickSight` logo at top left of page
 * Select `Datasets`
 * Select dataset `processed-timestamp-v1`
 * Select `EDIT DATASET`
+* Select data `processed-timestamp-v1`
 
 
 
