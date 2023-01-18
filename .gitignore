@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 data/.DS_Store
 .DS_Store
+~$jacob-cdr-symbio.csv
+cdr_20220330020017_0000000049.xml

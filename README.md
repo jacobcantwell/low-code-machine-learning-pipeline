@@ -1,31 +1,71 @@
-# low-code-machine-learning-pipeline
+# Automating Telecommunication Call Detail Records Insights with AWS SageMaker Canvas
 
-A Low Code AWS Machine Learning Pipeline
+This workflow describes a low code pipeline using AWS services for transforming and gaining insights from telecommunication call detail records.
+
+## About Call Data Records
+
+A call detail record (CDR) is a collection of information that describes a telephone call. A call detail record (CDR) contains data fields that describe a specific instance of a telecommunication transaction, but does not include the content of that transaction. Common information contained in a CDR is the called and calling number, the time when the call took place, the time when the call ended, and other properties that pertain to the phone call, but not the actual content and cost of the call. Customers can import the CDR data into Telecom Expense Management Systems (TEMS) to generate expense reports, and to track phone system usage for individuals and teams within the organization.
+
+For telephone service providers, they are critical to the production of revenue, in that they provide the basis for the generation of telephone bills.
 
 ## Data Format of the Call Data Records
 
-Below is the list of columns in our data set.
+The fields in our CDR are below.
 
-| Source key | Data example |
-| ----------- | ----------- |
-| start_datetime | 25-02-2021 11:53 | 
-| translated_calling_number | 4712226680853 | 
-| translated_called_number | 4712226680853 | 
-| connect_datetime | 25-02-2021 11:53 | 
-| disconnect_datetime | 25-02-2021 12:48 | 
-| charged_duration | 55 | 
-| originating_carrier_id | 6 | 
-| originating_transit_carrier_id | 6 | 
-| terminating_carrier_id | 4 | 
-| terminating_transit_carrier_id | 4 | 
-| call_direction | 1 |
+| Source key | Data example | Description |
+| ----------- | ----------- | ----------- |
+| start_datetime | 25-02-2021 11:53 | starting time of the call (date and time) |
+| translated_calling_number | 4712226680853 | phone number of the subscriber originating the call |
+| translated_called_number | 4712226680853 | phone number receiving the call |
+| connect_datetime | 25-02-2021 11:53 | connected time of the call (date and time) |
+| disconnect_datetime | 25-02-2021 12:48 | disconnected time of the call (date and time) |
+| charged_duration | 55 | the call duration (seconds) |
+| originating_carrier_id | 6 | originating carrier MNC mobile network code |
+| originating_transit_carrier_id | 6 |  originating carrier MNC mobile network code |
+| terminating_carrier_id | 4 | terminating carrier MNC mobile network code |
+| terminating_transit_carrier_id | 4 | terminating carrier MNC mobile network code |
+| call_direction | 1 | the route by which the call entered the exchange |
+| service_type | 1 | the call type (mobile, fixed, toll-free) |
+| release_cause_number | 16 | uses the Q.850 Cause Codes https://www.startelecom.ca/resources/q-850-cause-codes/ |
+| sip_response | 200 | SIP Responses are used during the setup and throughout the call to communicate information about failure reason, call state and update information such as caller ID https://www.startelecom.ca/resources/sip-response-codes/ | 
 
 ```csv
-start_datetime,translated_calling_number,translated_called_number,connect_datetime,disconnect_datetime,charged_duration,originating_carrier_id,originating_transit_carrier_id,terminating_carrier_id,terminating_transit_carrier_id,call_direction
-25-02-2021 11:53,5893746421295,5893746421295,25-02-2021 11:53,25-02-2021 12:48,55,7,7,8,8,1
-04-03-2022 10:05,4767306697766,4767306697766,04-03-2022 10:05,04-03-2022 10:18,13,3,3,0,0,2
-14-05-2022 11:05,6632467120375,6632467120375,14-05-2022 11:05,14-05-2022 11:28,23,3,3,9,9,2
+start_datetime,translated_calling_number,translated_called_number,connect_datetime,disconnect_datetime,charged_duration,originating_carrier_id,originating_transit_carrier_id,terminating_carrier_id,terminating_transit_carrier_id,call_direction,service_type,release_cause_number,sip_response
+
+25-02-2021 11:53,5893746421295,5893746421295,25-02-2021 11:53,25-02-2021 12:48,55,7,7,8,8,1,1,16,200
 ```
+
+## CDR Use Cases of Interest
+
+| Query | Description | Fields of interest |
+| -- | -- | -- |
+| Call voice service type (mobile, fixed, toll-free) by response return type (e.g. 404, 503) by carrier | A spike in 404 shows a carrier mobile calls might be falling over - where a change is significantly different from a normal week. A normal errors response rate is 8-10%. Detect anomaly hours talking into account day of week and hour of day. | <ul><li>start_datetime</li><li>originating_carrier_id</li><li>service_type</li><li>sip_response</li></ul> |
+| Response return type by carrier | A spike in error response codes might indicate a carrier is falling over | <ul><li>start_datetime</li><li>originating_carrier_id</li><li>sip_response</li></ul> |
+| Calls per day per carrier | Customer call usage | <ul><li>start_datetime</li><li>originating_carrier_id</li><li>service_type</li></ul> |
+| Customers with lots of unconnected calls | Lots of unanswered calls is a scam indicator | <ul><li>start_datetime</li><li>originating_carrier_id</li><li>service_type</li><li>charged_duration</li></ul> |
+| Customers with lots of short calls | Lots of short calls under 20 seconds indicates a robot dialer | <ul><li>start_datetime</li><li>originating_carrier_id</li><li>service_type</li><li>charged_duration</li></ul> |
+
+<!---
+* Looks for trends at time of week, traffic is similar at same times of week, we want to see what looks different
+* is_invalid_call - response code under 16 - https://www.startelecom.ca/resources/q-850-cause-codes/
+* is_short_call - call duration under 20 seconds
+* percentage of the calls from the actor id with high is_invalid_call and lots of is_short_call
+* every few minutes to run and detect, send email or dashboard
+* todo - add transformaiton for the time
+* detect anomous actor
+-->
+
+
+## Overview of the workflow
+
+1. Raw CDR records are copied into an Amazon S3 bucket.
+2. Catalog the raw CDR data with AWS Glue.
+3. Transform the data with AWS Glue Studio to a new data format.
+4. Catalog the transformed CDR data with AWS Glue.
+5. Make an ad-hoc query of the data with Amazon Athena.
+6. Create visualization charts of the data with Amazon QuickSight. 
+
+### Transforming Data
 
 Dates are provided in the format `%d-%m-%Y %H:%M`
 
@@ -322,8 +362,6 @@ Review the data set to see of the fields including the new calculated fields.
 * Select dataset `processed-timestamp-v1`
 * Select `EDIT DATASET`
 * Select data `processed-timestamp-v1`
-
-
 
 ### Create a Visualization
 
