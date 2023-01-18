@@ -219,7 +219,10 @@ select
   charged_duration,
   originating_carrier_id,
   terminating_carrier_id,
-  call_direction
+  call_direction,
+  service_type,
+  release_cause_number,
+  sip_response
 from myDataSource
 ```
 
@@ -381,4 +384,11 @@ Review the data set to see of the fields including the new calculated fields.
 | Sum of Total Charge | Autograph | total charge (Sum) | - | - | - | - |
 | Sum of Minutes by Type | Vertical bar chart | day minutes (Sum)<br />evening minutes (Sum)<br />night minutes (Sum)<br /> | - | - | - | - |
 | Sum of Minutes Type by Phone Number | Vertical bar chart | phone number | - | day minutes (Sum)<br />evening minutes (Sum)<br />night minutes (Sum)<br /> | phone number, top and bottom filter, top 10 by total minutes Sum | total minutes descending |
+
+## Machine Learning with Amazon SageMaker Canvas
+
+* Search for `Amazon SageMaker` in the Amazon Management Console
+* Select `Canvas`
+
+
 
