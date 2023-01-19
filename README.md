@@ -388,7 +388,110 @@ Review the data set to see of the fields including the new calculated fields.
 ## Machine Learning with Amazon SageMaker Canvas
 
 * Search for `Amazon SageMaker` in the Amazon Management Console
+
+If using Amazon SageMaker for the first time:
+
 * Select `Canvas`
+* Select `Create a SageMaker domain`
+* Enter name `call-detail-records`
+* Select `Submit`
+* Wait for the domain to be created
+* Select `Canvas`
+* Select `Create user profile`
+* Under *Execution role*, select `Create a new role`
+* In the *Create an IAM role* popup, select `Any S3 bucket`
+* Select `Create role`
+* Select the IAM role you created and select `Next`
+* Keep the default values and select `Next` for the remaining steps then select `Submit`
+
+To open Amazon SageMaker Canvas:
+
+* Select `Canvas`
+* Select a user profile
+* Select `Open Canvas`
+
+### Create CSV data for Canvas
+
+We will use Amazon Athena to export your data to a CSV file that Amazon SageMaker canvas can use.
+
+* Open *Amazon Athena* and run a SQL query for you new transformed data
+* Select `Query Editor`
+* Run a SQL query `SELECT * FROM "call-detail-records-mock-database"."processed-timestamp-v1" ORDER BY "start_datetime" DESC LIMIT 10000;`
+* Select `Run`
+* Select `Download results`
+
+This will download an export of the transformed data to a CSV file on your local computer.
+
+* Open *Amazon S3*
+* Open your transformed data folder *call-detail-records-mock*
+* Select `Create folder`
+* Enter a folder name `sagemaker-canvas`
+* Select `Create folder`
+* Open the new folder *sagemaker-canvas*
+* Select `Upload`
+* Select `Add files` and select the downloaded CSV file
+* Select `Upload`
+
+### Add a Canvas Dataset
+
+* Open *Amazon SageMaker Canvas*
+* Select `Datasets`
+* Select `S3`
+* Choose the *call-details-mock* folder then *sagemaker-canvas* folder
+* Check the box next to your CSV file and select `Import data`
+
+The details of this new data source should be populated and are now ready to use for your new model.
+
+* Select the three dot menu button on the right side of your new dataset and select `Rename`
+* Enter a new name for your dataset `call-details-mock-v1` and press *Enter* to save.
+
+### Create a new Canvas Model
+
+* Select `Models`
+* Select `+ New Model`
+* Enter a new model name `call-details-mock-v1`
+* Select the new CSV data set and select `Select dataset`
+
+The details of your data will start populating.
+
+### Transforming your data
+
+You can create a model recipe to transform your data set and use only data that is related to the predictions that you would like to make.
+
+Remove columns that are not needed for our prediction by unchecking the checkboxes next to each one.
+
+* *Drop* column *translated_called_number*
+* *Drop* column *disconnect_datetime*
+* *Drop* column *connect_datetime*
+* *Drop* column *call_direction*
+* *Drop* column *charged_duration*
+* *Drop* column *terminating_carrier_id*
+* *Drop* column *release_cause*
+* *Drop* column *sip_response*
+
+
+Add a new calculated column with the Functions option. 
+
+* Use formula `If(charged_duration>20,0,1)` with new column name `is_short_call`, select `Add`
+* Use formula `If(sip_response = 200,1,0)` with new column name `is_error_call`, select `Add`
+
+Use a filter to focus on rows of interest
+
+* Select *Filter*
+* Use column *service_type* with operation *Is equal to* and value *1*
+
+
+### Create a time series forecast
+
+* Choose a column that contains the time stamps, select *start_datetime*
+
+
+### Validate your data
+
+
+
+
+
 
 
 
